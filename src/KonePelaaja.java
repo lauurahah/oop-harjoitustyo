@@ -8,6 +8,9 @@ public class KonePelaaja extends Pelaaja {
 	}
 
 	@Override
+	public String muutaPelaajaJonoksi() {
+		return annaNimi()+","+annaMerkki()+","+PelaajanTyyppi.KONE;
+	}
 	public void pelaaVuoro(Peli p) {
 		
 		Lauta l = p.annaLauta();

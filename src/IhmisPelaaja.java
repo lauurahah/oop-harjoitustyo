@@ -6,6 +6,9 @@ public class IhmisPelaaja extends Pelaaja {
 	}
 	
 	@Override
+	public String muutaPelaajaJonoksi() {
+		return annaNimi()+","+annaMerkki()+","+PelaajanTyyppi.IHMINEN;
+	}
 	public void pelaaVuoro(Peli p) {
 		
 		Lauta l = p.annaLauta();
@@ -13,6 +16,8 @@ public class IhmisPelaaja extends Pelaaja {
 		l.tulostaPelilauta();
 		String paikka = Main.yleislukija().nextLine();
 		boolean asetus = false;
+		
+
 		
 		while (asetus == false) {
 			try {

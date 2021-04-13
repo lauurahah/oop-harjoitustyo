@@ -19,6 +19,7 @@ public abstract class Pelaaja {
 	//metodi määritellään toteuttamaan syötteenä saatuun / randomilla saatuun sijaintiin merkin asettaminen.
 	public abstract void pelaaVuoro(Peli p);
 		
+	public abstract String muutaPelaajaJonoksi();
 	
 
 }

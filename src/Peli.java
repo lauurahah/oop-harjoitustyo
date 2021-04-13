@@ -1,9 +1,13 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+
+
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.io.FileReader;
 
 public class Peli {
@@ -28,6 +32,7 @@ public class Peli {
 			System.out.println("\r\nJes, eikun pelaamaan!\n"
 								+ "xoxoxoxoxoxoxoxoxo");	
 			vuoro="2";
+			vuorossa=toka;
 			
 		}
 		
@@ -76,16 +81,16 @@ public class Peli {
 		
 		public void pelaaPeli() {
 			 while (this.l.onkoVoittanut(eka) == false && this.l.onkoVoittanut(toka) == false && this.l.onkoLautaTaynna() == false) {
-				 if(vuoro=="2") {
-					 System.out.println("\r\n>>> Vuorossa on "+eka.annaNimi()+", merkkisi on "+eka.annaMerkki());
+				 if(vuorossa==toka) {
+					 System.out.println("\r\n>>> Vuorossa on "+eka.annaNimi()+", merkkisi on "+eka.annaMerkki()+vuoro);
 					 eka.pelaaVuoro(this);
 					 vuoro="1";
-					 this.vuorossa = eka;
+					 vuorossa = eka;
 					 
 				 }
-				if (l.onkoVoittanut(eka) == false && l.onkoLautaTaynna() == false && vuoro=="1") {
+				if (l.onkoVoittanut(eka) == false && l.onkoLautaTaynna() == false && vuorossa==eka) {
 					
-					System.out.print("\r\n>>> Vuorossa on "+toka.annaNimi());
+					System.out.print("\r\n>>> Vuorossa on "+toka.annaNimi()+ vuoro);
 							
 							if (toka instanceof IhmisPelaaja) {
 								System.out.println(", merkkisi on "+toka.annaMerkki());
@@ -95,7 +100,7 @@ public class Peli {
 					
 					toka.pelaaVuoro(this);
 					vuoro="2";
-					this.vuorossa = toka;
+					vuorossa = toka;
 					
 
 					
@@ -124,7 +129,7 @@ public class Peli {
 		
 		}
 		
-		
+
 		
 		/* Rajapinnan metodien toteutus*/
 		// importattiin bufferit ja fileet
@@ -133,13 +138,9 @@ public class Peli {
 			File f= new File("Tallennus.txt");
 			FileWriter fw = new FileWriter(f);
 			BufferedWriter tallennus = new BufferedWriter(fw);
-			tallennus.write(eka.annaNimi());
+			tallennus.write(eka.muutaPelaajaJonoksi());
 			tallennus.newLine();
-			tallennus.write(eka.annaMerkki());
-			tallennus.newLine();
-			tallennus.write(toka.annaNimi());
-			tallennus.newLine();
-			tallennus.write(toka.annaMerkki());
+			tallennus.write(toka.muutaPelaajaJonoksi());
 			tallennus.newLine();
 			tallennus.write(l.muutaLautaJonoksi());
 			tallennus.newLine();
@@ -184,52 +185,71 @@ public class Peli {
 			// t‰‰ tuottaa mulle tuskaa...
 
 
-
+		private Pelaaja lataaPelaaja(String rivi) {
+			String[] arvot=rivi.split(",");
+			PelaajanTyyppi tyyppi = PelaajanTyyppi.valueOf(arvot[2]);
+			char merkki = arvot[1].charAt(0);
+			String nimi = arvot[0];
+			if(tyyppi == PelaajanTyyppi.IHMINEN) {
+				return new IhmisPelaaja(nimi, merkki);
+			}else {
+				return new KonePelaaja(nimi, merkki);
+			}
+			
+		}
 		
 		public void lataaPeli() {
 			try {
-			File f = new File("Tallennus.txt");
-			FileReader fr = new FileReader(f);
-			BufferedReader lataus= new BufferedReader(fr); 
-			String ekannimi = lataus.readLine();
-			char ekanmerkki = (char)lataus.read();
-			eka = new IhmisPelaaja(ekannimi, ekanmerkki);
-			String tyhj‰ = lataus.readLine();
-			String tokannimi = lataus.readLine();
-			char tokanmerkki = (char)lataus.read();
-			toka = new IhmisPelaaja (tokannimi, tokanmerkki); //ent‰ jos toka on kone
-			String tyhj‰1 = lataus.readLine();
-			String lautajono = lataus.readLine();
-			Peli pelinen = new Peli(eka, toka);
-			l.laitaMerkitLaudalle(lautajono);
-			vuoro = lataus.readLine();
+//			File f = new File("Tallennus.txt");
+	//		FileReader fr = new FileReader(f);
+//			BufferedReader lataus= new BufferedReader(fr); 
+//			String ekannimi = lataus.readLine();
+//			char ekanmerkki = (char)lataus.read();
+//			eka = new IhmisPelaaja(ekannimi, ekanmerkki);
+//			String tyhj‰ = lataus.readLine();
+//			String tokannimi = lataus.readLine();
+//			char tokanmerkki = (char)lataus.read();
+//			toka = new IhmisPelaaja (tokannimi, tokanmerkki); //ent‰ jos toka on kone
+//			String tyhj‰1 = lataus.readLine();
+//			String lautajono = lataus.readLine();
+//			Peli pelinen = new Peli(eka, toka);
+//			l.laitaMerkitLaudalle(lautajono);
+//			vuoro = lataus.readLine();
 			
 	//		lautajono.laitaMerkitLaudalle();
  //    		lautanen.tulostaPelilauta();
 //			lauta= //mill‰s t‰m‰ luetaan
 //			vuorossa=lataus.readLine();
 			
+			File f =new File("Tallennus.txt");
+			java.util.List<String> rivit=Files.readAllLines(f.toPath());
+			eka=lataaPelaaja(rivit.get(0));
+			toka=lataaPelaaja(rivit.get(1));
+			l.laitaMerkitLaudalle(rivit.get(2));
+			vuoro=rivit.get(3);
 			
-			if(vuoro=="2") {
+				
+			
+			if(vuoro.equals("2")) {
 				vuorossa = toka;
 			}
-			if(vuoro=="1") {
+			if(vuoro.equals("1")) {
 				vuorossa = eka;
 			}
 			
-			System.out.println("Lataus onnistui! Ekan pelaaja nimi on "+ ekannimi +"\r\nTokan "
-					+ "pelaajan nimi on "+tokannimi +". Viimeisen merkin on laittanut" +vuoro
+			System.out.println("Lataus onnistui! Ekan pelaaja nimi on "+ eka.annaNimi() +"\r\nTokan "
+					+ "pelaajan nimi on "+toka.annaNimi() +". Viimeisen merkin on laittanut" +vuoro
 							+ "Seuraavana vuorossa on " + vuorossa.annaNimi()
 					+ ". Merkkisi on "+vuorossa.annaMerkki());
 					//+ lauta);
 			l.tulostaPelilauta();
-			lataus.close();
+	//		lataus.close();
 //			eka.pelaavuoro(pelinen);
 //			toka.pelaaVuoro(this);
 //     		pelinen.pelaaPeli();
 			}
 			catch(Exception e) {
-				
+				e.printStackTrace();
 			}
 			
 			//TODO:
